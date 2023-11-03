@@ -33,6 +33,7 @@ module Prometheus
 
         h
       end
+      MAX_VMRANGE_BUCKET = VMRANGES.keys.max
 
       def initialize(name,
                      docstring:,
@@ -89,8 +90,8 @@ module Prometheus
 
         bucket_id = if float_bucket_id.negative?
           -1
-        elsif float_bucket_id > VMRANGES.keys.max
-          VMRANGES.keys.max
+        elsif float_bucket_id > MAX_VMRANGE_BUCKET
+          MAX_VMRANGE_BUCKET
         else
           float_bucket_id.to_i
         end
