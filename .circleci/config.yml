@@ -12,11 +12,6 @@ jobs:
 
     steps:
     - checkout
-    # JRuby <= 9.2.x is no longer supported by the `rubygems-update` gem, which now
-    # requires at least Ruby 2.6 compatibility.
-    #
-    # For now, we'll pin to the last supported version. We can drop this check once we
-    # drop all those versions of JRuby.
     - run: |
         running_old_ruby=$(ruby -e 'puts Gem::Version.new(RUBY_VERSION) < Gem::Version.new("2.6.0")')
         if [[ "${running_old_ruby}" == "true" ]]; then 
@@ -25,6 +20,7 @@ jobs:
           gem update --system
         fi
     - run: bundle install
+    - run: bundle exec rubocop
     - run: bundle exec rake
 
 workflows:
@@ -40,6 +36,5 @@ workflows:
             - cimg/ruby:3.0
             - cimg/ruby:3.1
             - cimg/ruby:3.2
-            - circleci/jruby:9.1
             - circleci/jruby:9.2
             - circleci/jruby:9.3

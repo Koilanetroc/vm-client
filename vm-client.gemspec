@@ -3,13 +3,13 @@ $LOAD_PATH.push File.expand_path('../lib', __FILE__)
 require 'prometheus/client/version'
 
 Gem::Specification.new do |s|
-  s.name              = 'prometheus-client'
+  s.name              = 'vm-client'
   s.version           = Prometheus::Client::VERSION
-  s.summary           = 'A suite of instrumentation metric primitives' \
-                        'that can be exposed through a web services interface.'
-  s.authors           = ['Ben Kochie', 'Chris Sinjakli', 'Daniel Magliola']
-  s.email             = ['superq@gmail.com', 'chris@sinjakli.co.uk', 'dmagliola@crystalgears.com']
-  s.homepage          = 'https://github.com/prometheus/client_ruby'
+  s.summary           = 'Fork of prometheus-client intended to be a drop-in replacement' \
+                        'for prometheus-client to switch from Prometheus to VictoriaMetrics'
+  s.authors           = ['Oleg Tolmashov']
+  s.email             = ['koilanetroc@gmail.com']
+  s.homepage          = 'https://github.com/Koilanetroc/vm-client'
   s.license           = 'Apache-2.0'
 
   s.files             = %w(README.md LICENSE) + Dir.glob('{lib/**/*}')
