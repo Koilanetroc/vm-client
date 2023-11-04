@@ -7,7 +7,7 @@ Fork of [prometheus-client](https://github.com/prometheus/client_ruby) intended 
 
 ## `vm-client` overview
 VictoriaMetrics has many [prominent features](https://docs.victoriametrics.com/Single-server-VictoriaMetrics.html#prominent-features) and can be used as drop-in replacement for Prometheus for [scraping targets](https://docs.victoriametrics.com/Single-server-VictoriaMetrics.html#how-to-scrape-prometheus-exporters-such-as-node-exporter).  
-Also [VictoriaMetrics accepts data](https://github.com/prometheus/pushgateway#url) in [Prometheus exposition format](https://github.com/prometheus/docs/blob/master/content/docs/instrumenting/exposition_formats.md#text-based-format) and [Pushgateway format](https://github.com/prometheus/pushgateway#url).
+Also [VictoriaMetrics accepts data](https://docs.victoriametrics.com/Single-server-VictoriaMetrics.html#how-to-import-data-in-prometheus-exposition-format) in [Prometheus exposition format](https://github.com/prometheus/docs/blob/master/content/docs/instrumenting/exposition_formats.md#text-based-format) and [Pushgateway format](https://github.com/prometheus/pushgateway#url).
 
 ### Compatibility with original `prometheus-client`
 `vm-client` is fully compatible with `prometheus-client` and can be used as a drop-in replacement. It only adds new features without breaking original ones. Gem uses original `prometheus` namespaces and there is no need to change anything.
