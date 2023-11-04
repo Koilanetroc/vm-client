@@ -5,14 +5,14 @@ Fork of [prometheus-client](https://github.com/prometheus/client_ruby) intended 
 [![Gem Version][4]](http://badge.fury.io/rb/vm-client)
 [![Build Status][3]](https://circleci.com/gh/Koilanetroc/vm-client/tree/main.svg?style=svg)
 
-## vm-client overview
+## `vm-client` overview
 VictoriaMetrics has many [prominent features](https://docs.victoriametrics.com/Single-server-VictoriaMetrics.html#prominent-features) and can be used as drop-in replacement for Prometheus for [scraping targets](https://docs.victoriametrics.com/Single-server-VictoriaMetrics.html#how-to-scrape-prometheus-exporters-such-as-node-exporter).  
 Also [VictoriaMetrics accepts data](https://github.com/prometheus/pushgateway#url) in [Prometheus exposition format](https://github.com/prometheus/docs/blob/master/content/docs/instrumenting/exposition_formats.md#text-based-format) and [Pushgateway format](https://github.com/prometheus/pushgateway#url).
 
-### Compatibility with original prometheus-client
+### Compatibility with original `prometheus-client`
 `vm-client` is fully compatible with `prometheus-client` and can be used as a drop-in replacement. It only adds new features without breaking original ones. Gem uses original `prometheus` namespaces and there is no need to change anything.
 
-## vm-client features
+## `vm-client` features
 ### VM histograms
 `vm-client` supports [VictoriaMetrics histograms](https://valyala.medium.com/improving-histogram-usability-for-prometheus-and-grafana-bc7e5df0e350). See [VM histogram section](#victoriametrics-histogram) for usage examples.  
 #### VictoriaMetrics histogram internals
