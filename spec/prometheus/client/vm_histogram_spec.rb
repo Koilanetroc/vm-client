@@ -38,7 +38,7 @@ describe Prometheus::Client::VmHistogram do
     it 'records the given value' do
       expect do
         histogram.observe(5)
-      end.to change { histogram.get }
+      end.to(change { histogram.get })
     end
 
     it 'raise error for vmrange labels' do
@@ -78,8 +78,8 @@ describe Prometheus::Client::VmHistogram do
         expect do
           expect do
             histogram.observe(5, labels: { test: 'value' })
-          end.to change { histogram.get(labels: { test: 'value' }) }
-        end.to_not change { histogram.get(labels: { test: 'other' }) }
+          end.to(change { histogram.get(labels: { test: 'value' }) })
+        end.to_not(change { histogram.get(labels: { test: 'other' }) })
       end
     end
   end
@@ -109,13 +109,13 @@ describe Prometheus::Client::VmHistogram do
     it 'returns a value which includes sum' do
       value = histogram.get(labels: { foo: 'bar' })
 
-      expect(value["sum"]).to eql(25.2)
+      expect(value['sum']).to eql(25.2)
     end
 
     it 'returns a value which includes count' do
       value = histogram.get(labels: { foo: 'bar' })
 
-      expect(value["count"]).to eql(4.0)
+      expect(value['count']).to eql(4.0)
     end
 
     it 'uses zero as default value' do
@@ -135,15 +135,15 @@ describe Prometheus::Client::VmHistogram do
       histogram.observe(12, labels: { status: 'baz' })
 
       expect(histogram.values).to eql(
-        { status: 'bar' } => { "2.783e+00...3.162e+00" => 1.0, "count" => 1.0, "sum" => 3.0 },
-        { status: 'foo' } => { "5.995e+00...6.813e+00" => 1.0, "count" => 1.0, "sum" => 6.0 },
-        { status: 'baz' } => { "1.136e+01...1.292e+01" => 1.0, "count" => 1.0, "sum" => 12.0 }
+        { status: 'bar' } => { '2.783e+00...3.162e+00' => 1.0, 'count' => 1.0, 'sum' => 3.0 },
+        { status: 'foo' } => { '5.995e+00...6.813e+00' => 1.0, 'count' => 1.0, 'sum' => 6.0 },
+        { status: 'baz' } => { '1.136e+01...1.292e+01' => 1.0, 'count' => 1.0, 'sum' => 12.0 }
       )
     end
   end
 
   describe '#init_label_set' do
-    context "with labels" do
+    context 'with labels' do
       let(:expected_labels) { [:status] }
 
       it 'initializes the metric for a given label set' do
@@ -153,16 +153,16 @@ describe Prometheus::Client::VmHistogram do
         histogram.init_label_set(status: 'foo')
 
         expect(histogram.values).to eql(
-          { status: 'bar' } => { "sum" => 0.0, "count" => 0.0 },
-          { status: 'foo' } => { "sum" => 0.0, "count" => 0.0 },
+          { status: 'bar' } => { 'sum' => 0.0, 'count' => 0.0 },
+          { status: 'foo' } => { 'sum' => 0.0, 'count' => 0.0 }
         )
       end
     end
 
-    context "without labels" do
+    context 'without labels' do
       it 'automatically initializes the metric' do
         expect(histogram.values).to eql(
-          {} => { "sum" => 0.0, "count" => 0.0 }
+          {} => { 'sum' => 0.0, 'count' => 0.0 }
         )
       end
     end
@@ -178,13 +178,13 @@ describe Prometheus::Client::VmHistogram do
     end
 
     it 'registers `with_labels` observations in the original metric store' do
-      histogram.observe(7, labels: { foo: 'value1'})
-      histogram_with_labels = histogram.with_labels({ foo: 'value2'})
+      histogram.observe(7, labels: { foo: 'value1' })
+      histogram_with_labels = histogram.with_labels({ foo: 'value2' })
       histogram_with_labels.observe(20)
 
       expected_values = {
-        { foo: 'value1' } => { "6.813e+00...7.743e+00" => 1.0, "count" => 1.0, "sum" => 7.0 },
-        { foo: 'value2' } => { "1.896e+01...2.154e+01" => 1.0, "count" => 1.0, "sum" => 20.0 }
+        { foo: 'value1' } => { '6.813e+00...7.743e+00' => 1.0, 'count' => 1.0, 'sum' => 7.0 },
+        { foo: 'value2' } => { '1.896e+01...2.154e+01' => 1.0, 'count' => 1.0, 'sum' => 20.0 }
       }
       expect(histogram_with_labels.values).to eql(expected_values)
       expect(histogram.values).to eql(expected_values)
@@ -214,24 +214,24 @@ describe Prometheus::Client::VmHistogram do
       # See the comment in spec/prometheus/client/metric_spec.rb for an
       # explanation of what this test is doing and why.
       it "doesn't corrupt the data files" do
-        histogram_with_labels = histogram.with_labels({ foo: 'longervalue'})
+        histogram_with_labels = histogram.with_labels({ foo: 'longervalue' })
 
         # Initialize / read the files for both views of the metric
-        histogram.observe(1, labels: { foo: 'value1', bar: 'zzz'})
-        histogram_with_labels.observe(1, labels: {bar: 'zzz'})
+        histogram.observe(1, labels: { foo: 'value1', bar: 'zzz' })
+        histogram_with_labels.observe(1, labels: { bar: 'zzz' })
 
         # After both MetricStores have their files, add a new entry to both
-        histogram.observe(1, labels: { foo: 'value1', bar: 'aaa'}) # If there's a bug, we partially overwrite { foo: 'longervalue', bar: 'zzz'}
-        histogram_with_labels.observe(1, labels: {bar: 'aaa'}) # Extend the file so we read past that overwrite
+        histogram.observe(1, labels: { foo: 'value1', bar: 'aaa' }) # If there's a bug, we partially overwrite { foo: 'longervalue', bar: 'zzz'}
+        histogram_with_labels.observe(1, labels: { bar: 'aaa' }) # Extend the file so we read past that overwrite
 
         expect { histogram.values }.not_to raise_error # Check it hasn't corrupted our files
         expect { histogram_with_labels.values }.not_to raise_error # Check it hasn't corrupted our files
 
         expected_values = {
-          {foo: 'value1', bar: 'zzz'} => {"8.799e-01...1.000e+00"=>1.0, "count"=>1.0, "sum"=>1.0},
-          {foo: 'value1', bar: 'aaa'} => {"8.799e-01...1.000e+00"=>1.0, "count"=>1.0, "sum"=>1.0},
-          {foo: 'longervalue', bar: 'zzz'} => {"8.799e-01...1.000e+00"=>1.0, "count"=>1.0, "sum"=>1.0},
-          {foo: 'longervalue', bar: 'aaa'} => {"8.799e-01...1.000e+00"=>1.0, "count"=>1.0, "sum"=>1.0}
+          { foo: 'value1', bar: 'zzz' } => { '8.799e-01...1.000e+00' => 1.0, 'count' => 1.0, 'sum' => 1.0 },
+          { foo: 'value1', bar: 'aaa' } => { '8.799e-01...1.000e+00' => 1.0, 'count' => 1.0, 'sum' => 1.0 },
+          { foo: 'longervalue', bar: 'zzz' } => { '8.799e-01...1.000e+00' => 1.0, 'count' => 1.0, 'sum' => 1.0 },
+          { foo: 'longervalue', bar: 'aaa' } => { '8.799e-01...1.000e+00' => 1.0, 'count' => 1.0, 'sum' => 1.0 }
         }
 
         expect(histogram.values).to eql(expected_values)

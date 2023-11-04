@@ -16,7 +16,7 @@ module Prometheus
       DECIMAL_BUCKETS_COUNT = E10MAX - E10MIN
       BUCKETS_COUNT = DECIMAL_BUCKETS_COUNT * BUCKETS_PER_DECIMAL
       BUCKETS_MULTIPLIER = 10**(1.0 / BUCKETS_PER_DECIMAL)
-      VMRANGES ||= begin
+      VMRANGES = begin
         h = {}
         value = 10**E10MIN
         range_start = format('%.3e', value)
@@ -39,10 +39,11 @@ module Prometheus
                      docstring:,
                      labels: [],
                      preset_labels: {},
-                     buckets: [], # VM histogram ignores passed buckets, accepts only for compatibility
+                     # VM histogram ignores passed buckets, accepts only for compatibility
+                     buckets: [], # rubocop:disable Lint/UnusedMethodArgument
                      store_settings: {})
 
-        @buckets = ['sum', 'count']
+        @buckets = %w[sum count]
         # TODO: this should take into account labels
         @non_nil_buckets = {}
         @base_label_set_cache = {}
@@ -52,14 +53,6 @@ module Prometheus
               labels: labels,
               preset_labels: preset_labels,
               store_settings: store_settings)
-      end
-
-      def self.linear_buckets(start:, width:, count:)
-        count.times.map { |idx| start.to_f + idx * width }
-      end
-
-      def self.exponential_buckets(start:, factor: 2, count:)
-        count.times.map { |idx| start.to_f * factor ** idx }
       end
 
       def with_labels(labels)
@@ -89,12 +82,12 @@ module Prometheus
         float_bucket_id = (Math.log10(value) - E10MIN) * BUCKETS_PER_DECIMAL
 
         bucket_id = if float_bucket_id.negative?
-          -1
-        elsif float_bucket_id > MAX_VMRANGE_BUCKET
-          MAX_VMRANGE_BUCKET
-        else
-          float_bucket_id.to_i
-        end
+                      -1
+                    elsif float_bucket_id > MAX_VMRANGE_BUCKET
+                      MAX_VMRANGE_BUCKET
+                    else
+                      float_bucket_id.to_i
+                    end
 
         # Edge case for 10^n values, which must go to the lower bucket
         # according to Prometheus logic for `le`-based histograms
