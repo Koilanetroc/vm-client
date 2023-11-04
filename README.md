@@ -2,7 +2,7 @@
 
 Fork of [prometheus-client](https://github.com/prometheus/client_ruby) intended to be a drop-in replacement for `prometheus-client`  to switch from Prometheus to [VictoriaMetrics](https://github.com/VictoriaMetrics/VictoriaMetrics)
 
-[![Gem Version][4]](http://badge.fury.io/rb/prometheus-client)
+[![Gem Version][4]](http://badge.fury.io/rb/vm-client)
 [![Build Status][3]](https://circleci.com/gh/Koilanetroc/vm-client/tree/main.svg?style=svg)
 
 ## vm-client overview
@@ -548,7 +548,7 @@ rake
 [1]: https://github.com/VictoriaMetrics/VictoriaMetrics
 [2]: http://rack.github.io/
 [3]: https://circleci.com/gh/Koilanetroc/vm-client/tree/main.svg?style=svg
-[4]: https://badge.fury.io/rb/prometheus-client.svg
+[4]: https://badge.fury.io/rb/vm-client.svg
 [8]: https://github.com/prometheus/pushgateway
 [9]: lib/prometheus/middleware/exporter.rb
 [10]: lib/prometheus/middleware/collector.rb
