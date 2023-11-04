@@ -1,22 +1,49 @@
-# Prometheus Ruby Client
+# VictoriaMetrics Ruby Client
 
-A suite of instrumentation metric primitives for Ruby that can be exposed
-through a HTTP interface. Intended to be used together with a
-[Prometheus server][1].
+Fork of [prometheus-client](https://github.com/prometheus/client_ruby) intended to be a drop-in replacement for `prometheus-client`  to switch from Prometheus to [VictoriaMetrics](https://github.com/VictoriaMetrics/VictoriaMetrics)
 
 [![Gem Version][4]](http://badge.fury.io/rb/prometheus-client)
-[![Build Status][3]](https://circleci.com/gh/prometheus/client_ruby/tree/main.svg?style=svg)
+[![Build Status][3]](https://circleci.com/gh/Koilanetroc/vm-client/tree/main.svg?style=svg)
+
+## vm-client overview
+VictoriaMetrics has many [prominent features](https://docs.victoriametrics.com/Single-server-VictoriaMetrics.html#prominent-features) and can be used as drop-in replacement for Prometheus for [scraping targets](https://docs.victoriametrics.com/Single-server-VictoriaMetrics.html#how-to-scrape-prometheus-exporters-such-as-node-exporter).  
+Also [VictoriaMetrics accepts data](https://github.com/prometheus/pushgateway#url) in [Prometheus exposition format](https://github.com/prometheus/docs/blob/master/content/docs/instrumenting/exposition_formats.md#text-based-format) and [Pushgateway format](https://github.com/prometheus/pushgateway#url).
+
+### Compatibility with original prometheus-client
+`vm-client` is fully compatible with `prometheus-client` and can be used as a drop-in replacement. It only adds new features without breaking original ones. Gem uses original `prometheus` namespaces and there is no need to change anything.
+
+## vm-client features
+### VM histograms
+`vm-client` supports [VictoriaMetrics histograms](https://valyala.medium.com/improving-histogram-usability-for-prometheus-and-grafana-bc7e5df0e350). See [VM histogram section](#victoriametrics-histogram) for usage examples.  
+#### VictoriaMetrics histogram internals
+Buckets for VM histograms are created on demand and cover values in the following range: [10-⁹…10¹⁸]. This includes:
+- Times from nanoseconds to billions of years.
+- Sizes from 0 bytes to 2⁶⁰ bytes.
+
+The Histogram splits each `(10^n...10^(n+1)]` range into 18 log-based buckets with `10^(1/18)=1.136` multiplier:
+
+`(1.0*10^n…1.136*10^n], (1.136*10^n…1.292*10^n], … (8.799*10^n…1.0*10^(n+1)]`
+
+In total there are 487 possible buckets and this gives 13.6% worst-case precision error, which is enough for most practical cases.
+#### Why switch to VM histograms?
+- There is no need in thinking about bucket ranges and the number of buckets per histogram, since buckets are created on demand.
+- There is no need in worrying about high cardinality, since only buckets with non-zero values are exposed to VictoriaMetrics. Usually real-world values are located on quite small range, so they are covered by small number of histogram buckets.
+- There is no need in re-configuring buckets over time, since bucket configuration is static. This allows performing cross-histogram calculations
+- It allows calculating any quantiles using [MetricsQL](https://docs.victoriametrics.com/MetricsQL.html)
+- It allows building pretty informative heatmaps in grafana  
+![heatmap example](https://miro.medium.com/v2/resize:fit:2000/format:webp/1*hyBGecTFwoPSES6AzvB0YA.png)
+Image from [VictoriaMetrics histograms](https://valyala.medium.com/improving-histogram-usability-for-prometheus-and-grafana-bc7e5df0e350) article.
 
 ## Usage
 
 ### Installation
 
-For a global installation run `gem install prometheus-client`.
+For a global installation run `gem install vm-client`.
 
-If you're using [Bundler](https://bundler.io/) add `gem "prometheus-client"` to your `Gemfile`.
+If you're using [Bundler](https://bundler.io/) replace `gem "prometheus-client"` with `gem "vm-client"` in your `Gemfile`.
 Make sure to run `bundle install` afterwards.
 
-### Overview
+### Original prometheus-client overview
 
 ```ruby
 require 'prometheus/client'
@@ -202,6 +229,22 @@ Histograms provide default buckets of `[0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5
 
 You can specify your own buckets, either explicitly, or using the `Histogram.linear_buckets`
 or `Histogram.exponential_buckets` methods to define regularly spaced buckets.
+
+### VictoriaMetrics histogram
+Vm histogram works similar to original Histogram:
+```ruby
+histogram = Prometheus::Client::VmHistogram.new(:service_latency_seconds, docstring: '...', labels: [:service])
+
+# record some value
+histogram.observe(100, labels: { service: 'users' })
+
+# retrieve dynamicaly generated vmrange buckets
+histogram.get(labels: { service: 'users' })
+# => { '8.799e+01...1.000e+02' => 1.0, 'count' => 1.0, 'sum' => 100.0 }
+```
+`VmHistogram` can accept `buckets` keyword, but it won't be used. Its only for compatibility.  
+
+Basically global replacement in project of `Prometheus::Client::Histogram` with `Prometheus::Client::VmHistogram` should be enough to start using VM histograms.
 
 ### Summary
 
@@ -502,9 +545,9 @@ rspec:
 rake
 ```
 
-[1]: https://github.com/prometheus/prometheus
+[1]: https://github.com/VictoriaMetrics/VictoriaMetrics
 [2]: http://rack.github.io/
-[3]: https://circleci.com/gh/prometheus/client_ruby/tree/main.svg?style=svg
+[3]: https://circleci.com/gh/Koilanetroc/vm-client/tree/main.svg?style=svg
 [4]: https://badge.fury.io/rb/prometheus-client.svg
 [8]: https://github.com/prometheus/pushgateway
 [9]: lib/prometheus/middleware/exporter.rb
