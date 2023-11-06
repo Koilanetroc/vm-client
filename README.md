@@ -20,9 +20,9 @@ Buckets for VM histograms are created on demand and cover values in the followin
 - Times from nanoseconds to billions of years.
 - Sizes from 0 bytes to 2⁶⁰ bytes.
 
-The Histogram splits each `10^n...10^(n+1)` range into 18 log-based buckets with `10^(1/18)=1.136` multiplier:
+The Histogram splits each `(10^n...10^(n+1)]` range into 18 log-based buckets with `10^(1/18)=1.136` multiplier:
 
-`(1.0*10^n…1.136*10^n), (1.136*10^n…1.292*10^n), … (8.799*10^n…1.0*10^(n+1)`
+`(1.0*10^n…1.136*10^n], (1.136*10^n…1.292*10^n], … (8.799*10^n…1.0*10^(n+1)]`
 
 In total there are 487 possible buckets and this gives 13.6% worst-case precision error, which is enough for most practical cases.
 #### Why switch to VM histograms?
