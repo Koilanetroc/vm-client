@@ -10,7 +10,9 @@ VictoriaMetrics has many [prominent features](https://docs.victoriametrics.com/S
 Also [VictoriaMetrics accepts data](https://docs.victoriametrics.com/Single-server-VictoriaMetrics.html#how-to-import-data-in-prometheus-exposition-format) in [Prometheus exposition format](https://github.com/prometheus/docs/blob/master/content/docs/instrumenting/exposition_formats.md#text-based-format) and [Pushgateway format](https://github.com/prometheus/pushgateway#url).
 
 ### Compatibility with original `prometheus-client`
-`vm-client` is fully compatible with `prometheus-client` and can be used as a drop-in replacement. It only adds new features without breaking original ones. Gem uses original `prometheus` namespaces and there is no need to change anything.
+`vm-client` is fully compatible with `prometheus-client` and can be used as a drop-in replacement. It only adds new features without breaking original ones. Gem uses original `prometheus` namespaces and there is no need to change anything.  
+
+`vm-client` 1.0.0 is based on `prometheus_client` 4.2.1, if you are upgrading from previous versions, please check the original [CHANGELOG.md](https://github.com/Koilanetroc/vm-client/blob/main/CHANGELOG.md) and [UPGRADING.md](https://github.com/Koilanetroc/vm-client/blob/main/UPGRADING.md)
 
 ## `vm-client` features
 ### VM histograms
